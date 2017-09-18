@@ -31,7 +31,7 @@ def get_request_ids_from_pending(txs):
     return request_ids
 
 
-def sign_pending_txs():
+def sign_pending_txs(txs):
     ids = get_request_ids_from_pending(txs)	
 
     payload = {
@@ -53,9 +53,7 @@ def sign_pending_txs():
 
 def main():
     txs = get_pending_txs()
-    print ids
-
-    sign_pending_txs(ids)
+    sign_pending_txs(txs)
 
 
 if __name__ == "__main__":
