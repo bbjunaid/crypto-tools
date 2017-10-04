@@ -1,5 +1,6 @@
 import requests
 import json
+import time
 
 URL = 'http://localhost:8545'
 headers = {'content-type': 'application/json'}
@@ -9,15 +10,16 @@ def get_pending_txs():
         "method": "signer_requestsToConfirm",
         "params": [] ,
         "jsonrpc": "2.0",
-	"id": 1,
+	    "id": 1,
     }
+
     txs = []
 
     try:
         response = json.loads(requests.post(URL, data=json.dumps(payload), headers=headers).content)
-	txs = response['result']
-    except Exception:
-	pass
+        txs = response['result']
+    except Exception as e:
+	    print e.message
 
     return txs
 
@@ -41,19 +43,25 @@ def sign_pending_txs(txs):
     }
 
     for id in ids:
-	payload['params'] = [id, {}, '']
+        payload['params'] = [id, {}, '']
         print json.dumps(payload)
 
-	try:
-	    response = json.loads(requests.post(URL, data=json.dumps(payload), headers=headers).content)
-	    print response
-	except Exception:
-	    print "Could not sign request {id}".format(id=id)
+        try:
+	        response = json.loads(requests.post(URL, data=json.dumps(payload), headers=headers).content)
+	        print response
+        except Exception as e:
+            print e.message
+            print "Could not sign request {id}".format(id=id)
 
 
 def main():
-    txs = get_pending_txs()
-    sign_pending_txs(txs)
+    while True:
+        time.sleep(0.5) 
+        try:
+            txs = get_pending_txs()
+            sign_pending_txs(txs)
+        except Exception as e:
+            print e.message
 
 
 if __name__ == "__main__":
